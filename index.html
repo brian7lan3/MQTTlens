@@ -14,11 +14,13 @@
 
     <script>
         // Create a client instance
-        client = new Paho.MQTT.Client("wss://iot.eclipse.org:443/ws", "rtyrtyrtyrtyreytreddgfgfffgee");
+        client = new Paho.MQTT.Client("wss://iot.eclipse.org:443/ws", "rtyrtyrtyrtyreytreddgfgfffgee");  // 創建新client，使用Breakor以及客戶ID
+
 
         // set callback handlers
         client.onConnectionLost = onConnectionLost;
         client.onMessageArrived = onMessageArrived;
+
 
         // connect the client
         client.connect({ onSuccess: onConnect });
@@ -34,50 +36,58 @@
             // client.send(message);
         }
 
+
         // called when the client loses its connection
-        function onConnectionLost(responseObject) {
+        function onConnectionLost(responseObject)  // 連結失敗時
+        {
             if (responseObject.errorCode !== 0) {
-                console.log("onConnectionLost:" + responseObject.errorMessage);
+                console.log("onConnectionLost:" + responseObject.errorMessage);  // 連結失敗時，控制台輸出訊息
             }
         }
 
-        // called when a message arrives
-        function onMessageArrived(message) {
-            console.log("onMessageArrived:" + message.payloadString);
 
-            var output = document.getElementById('txtMsgs');
-            output.innerHTML = message.payloadString + "<br>" + output.innerHTML;
+        // called when a message arrives
+        function onMessageArrived(message) // 當訊息抵達時
+        { 
+            console.log("onMessageArrived:" + message.payloadString);  // 在控制台顯示出來
+
+            var output = document.getElementById('txtMsgs');  // 將訊息列的資料，存入output
+            output.innerHTML = message.payloadString + "<br>" + output.innerHTML;  // 訊息載入，並且放在最上面的第一行
         }
 
+
+        // 訂閱主題
         function subTopic()
         {
-            var topic = document.getElementById('txtSubTopic').value;
-            client.subscribe(topic);
+            var topic = document.getElementById('txtSubTopic').value;  // 取得訂閱名稱Topic並放入
+            client.subscribe(topic);  // 訂閱Topic
         }
 
+
+        // 發佈主題
         function pubTopic()
         {
-            var topic = document.getElementById('txtPubTopic').value;
-            var msg = document.getElementById('txtPubMsg').value;
+            var topic = document.getElementById('txtPubTopic').value;  // 取得訂閱名稱Topic並放入
+            var msg = document.getElementById('txtPubMsg').value;  // 將pub訊息存入
 
-            message = new Paho.MQTT.Message(msg);
-            message.destinationName = topic;
-            client.send(message);
+            message = new Paho.MQTT.Message(msg);  // 建立新物件，放入msg
+            message.destinationName = topic;  // 將Topic設定為訊息目標
+            client.send(message);  // 送出訊息
         }
     </script>
 
 
 
-    主題:
+    訂閱Topic:<br>
     <input type="text" id="txtSubTopic">
-    <input type="button" value="訂閱" id="btnSubTopic" onclick="subTopic()">
-    <hr>
-    主題:
+    <input type="button" value="訂閱" id="btnSubTopic" onclick="subTopic()"><hr>
+
+    發佈Topic:<br>
     <input type="text" id="txtPubTopic"><br>
-    訊息:
-    <input type="text" id="txtPubMsg"><br>
-    <input type="button" value="發送" id="btnPubMsg" onclick="pubTopic()">
-    <hr>
+    發送訊息:<br>
+    <input type="text" id="txtPubMsg">
+    <input type="button" value="發送" id="btnPubMsg" onclick="pubTopic()"><hr>
+
     訊息列:
     <div id="txtMsgs"></div>
 
